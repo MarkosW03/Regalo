@@ -39,6 +39,7 @@
             background-color: white;
             z-index: 5;
             margin-bottom: 15px;
+            cursor: pointer;
         }
 
         .panel {
@@ -54,6 +55,55 @@
 
         .panel.activo {
             opacity: 1;
+        }
+
+        /* --- PANTALLA DE CARGA --- */
+        .pantalla-carga {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #fdfbf7;
+            z-index: 20;
+            color: #2c3e50;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-size: 1rem;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f1c40f;
+            border-top: 4px solid #2c3e50;
+            border-radius: 50%;
+            animation: girar 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        /* --- INDICADOR DE TAP --- */
+        .indicador-tap {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(44, 62, 80, 0.85);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            z-index: 15;
+            animation: pulso-suave 1.5s infinite;
+            white-space: nowrap;
+            pointer-events: none;
+            display: none;
         }
 
         /* --- TARJETA DE MENSAJE FINAL --- */
@@ -144,47 +194,34 @@
 
         /* --- ANIMACIONES --- */
         @keyframes aparecer {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes latido {
-            0% {
-                transform: scale(1);
-            }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
 
-            50% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                transform: scale(1);
-            }
+        @keyframes pulso-suave {
+            0% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.08); }
+            100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
         }
 
         @keyframes caer {
-            to {
-                transform: translateY(110vh) rotate(360deg);
-            }
+            to { transform: translateY(110vh) rotate(360deg); }
         }
 
         @keyframes flotar-aleatorio {
-            0% {
-                transform: translate(0, 0) scale(0.5);
-                opacity: 1;
-            }
+            0% { transform: translate(0, 0) scale(0.5); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(1.5); opacity: 0; }
+        }
 
-            100% {
-                transform: translate(var(--x), var(--y)) scale(1.5);
-                opacity: 0;
-            }
+        @keyframes girar {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -192,13 +229,23 @@
 <body>
 
     <!-- CONTENEDOR DE LAS 6 IMÁGENES -->
-    <div class="contenedor-historia">
+    <div class="contenedor-historia" id="contenedor">
+        
+        <!-- Pantalla de carga -->
+        <div class="pantalla-carga" id="pantallaCarga">
+            <div class="spinner"></div>
+            <p>Cargando sorpresa... 🌼</p>
+        </div>
+
         <img src="1.png" class="panel activo" id="panel1" alt="Panel 1">
         <img src="2.png" class="panel" id="panel2" alt="Panel 2">
         <img src="3.png" class="panel" id="panel3" alt="Panel 3">
         <img src="4.png" class="panel" id="panel4" alt="Panel 4">
         <img src="5.png" class="panel" id="panel5" alt="Panel 5">
         <img src="6.png" class="panel" id="panel6" alt="Panel 6">
+
+        <!-- Indicador de tap -->
+        <div class="indicador-tap" id="indicador">👆 Toca para empezar</div>
     </div>
 
     <!-- TARJETA FINAL -->
@@ -226,7 +273,54 @@
         ];
 
         let indiceActual = 0;
+        let historiaIniciada = false;
         const velocidad = 2500; // 2.5 segundos por panel
+
+        // --- PRECARGA DE IMÁGENES ---
+        const rutasImagenes = ['1.png', '2.png', '3.png', '4.png', '5.png', '6.png'];
+        let imagenesCargadas = 0;
+
+        function precargarImagenes() {
+            rutasImagenes.forEach((ruta) => {
+                const img = new Image();
+                img.src = ruta;
+
+                img.onload = () => {
+                    imagenesCargadas++;
+                    if (imagenesCargadas === rutasImagenes.length) {
+                        imagenesListas();
+                    }
+                };
+
+                img.onerror = () => {
+                    console.warn('Error cargando: ' + ruta);
+                    imagenesCargadas++;
+                    if (imagenesCargadas === rutasImagenes.length) {
+                        imagenesListas();
+                    }
+                };
+            });
+        }
+
+        function imagenesListas() {
+            // Ocultar pantalla de carga
+            document.getElementById('pantallaCarga').style.display = 'none';
+            // Mostrar indicador de tap
+            document.getElementById('indicador').style.display = 'block';
+        }
+
+        // --- INICIAR HISTORIA CON UN TAP/CLIC ---
+        document.getElementById('contenedor').addEventListener('pointerdown', () => {
+            if (historiaIniciada) return;
+            historiaIniciada = true;
+
+            // Ocultar indicador
+            document.getElementById('indicador').style.display = 'none';
+            document.getElementById('contenedor').style.cursor = 'default';
+
+            // Iniciar secuencia
+            setTimeout(avanzarHistoria, 500);
+        }, { once: true });
 
         function avanzarHistoria() {
             // Ocultar el panel actual
@@ -241,17 +335,12 @@
                 if (indiceActual === paneles.length - 1) {
                     setTimeout(() => {
                         document.getElementById('tarjeta').style.display = 'block';
-                    }, velocidad + 1000); // 1 segundo extra para el último panel
+                    }, velocidad + 1000);
                 } else {
                     setTimeout(avanzarHistoria, velocidad);
                 }
             }
         }
-
-        // La historia inicia con el primer tap (móvil) o clic (escritorio)
-        document.addEventListener('pointerdown', () => {
-            setTimeout(avanzarHistoria, velocidad);
-        }, { once: true });
 
         // --- LÓGICA DEL BOTÓN SORPRESA ---
         function mostrarSorpresa() {
@@ -310,6 +399,8 @@
             setTimeout(() => { span.remove(); }, 5000);
         }
 
+        // --- INICIAR TODO ---
+        precargarImagenes();
         setInterval(crearLluvia, 300);
     </script>
 
