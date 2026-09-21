@@ -248,8 +248,10 @@
             }
         }
 
-        // Inicia la historia después de 1 segundo
-        setTimeout(avanzarHistoria, 1000);
+        // La historia inicia con el primer tap (móvil) o clic (escritorio)
+        document.addEventListener('pointerdown', () => {
+            setTimeout(avanzarHistoria, velocidad);
+        }, { once: true });
 
         // --- LÓGICA DEL BOTÓN SORPRESA ---
         function mostrarSorpresa() {
