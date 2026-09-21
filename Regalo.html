@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Un regalo especial 🌼</title>
+    <style>
+        /* --- CONFIGURACIÓN BÁSICA --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #fdfbf7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Georgia', serif;
+            overflow-x: hidden;
+            position: relative;
+            padding: 10px;
+        }
+
+        /* --- CONTENEDOR DE LA HISTORIA (IMÁGENES) --- */
+        .contenedor-historia {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 16 / 9;
+            border: 3px solid #2c3e50;
+            border-radius: 12px;
+            box-shadow: 5px 5px 0px rgba(44, 62, 80, 0.2);
+            overflow: hidden;
+            background-color: white;
+            z-index: 5;
+            margin-bottom: 15px;
+        }
+
+        .panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            object-fit: cover;
+        }
+
+        .panel.activo {
+            opacity: 1;
+        }
+
+        /* --- TARJETA DE MENSAJE FINAL --- */
+        .tarjeta-final {
+            display: none;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 25px 20px;
+            border-radius: 15px;
+            border: 3px solid #2c3e50;
+            box-shadow: 5px 5px 0px rgba(44, 62, 80, 0.3);
+            width: 100%;
+            max-width: 500px;
+            animation: aparecer 1s ease-out;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        p {
+            font-size: 1rem;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        /* --- BOTÓN SORPRESA --- */
+        .boton-flores {
+            background-color: #f1c40f;
+            color: #2c3e50;
+            border: 3px solid #2c3e50;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 4px 4px 0px #2c3e50;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            animation: latido 1.5s infinite;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .boton-flores:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px #2c3e50;
+            animation: none;
+        }
+
+        /* --- MENSAJE OCULTO (SORPRESA) --- */
+        .mensaje-oculto {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #fff9e6;
+            border: 2px dashed #f1c40f;
+            border-radius: 12px;
+            color: #2c3e50;
+            font-size: 1rem;
+            line-height: 1.5;
+            animation: aparecer 0.8s ease-out;
+        }
+
+        /* --- LLUVIA DE EMOJIS --- */
+        .lluvia-emoji {
+            position: fixed;
+            top: -50px;
+            font-size: 1.6rem;
+            animation: caer linear forwards;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* --- EMOJIS FLOTANTES AL HACER CLIC --- */
+        .emoji-flotante {
+            position: fixed;
+            font-size: 1.8rem;
+            animation: flotar-aleatorio 2s ease-out forwards;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        /* --- ANIMACIONES --- */
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes latido {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes caer {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        @keyframes flotar-aleatorio {
+            0% {
+                transform: translate(0, 0) scale(0.5);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--x), var(--y)) scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CONTENEDOR DE LAS 6 IMÁGENES -->
+    <div class="contenedor-historia">
+        <img src="1.png" class="panel activo" id="panel1" alt="Panel 1">
+        <img src="2.png" class="panel" id="panel2" alt="Panel 2">
+        <img src="3.png" class="panel" id="panel3" alt="Panel 3">
+        <img src="4.png" class="panel" id="panel4" alt="Panel 4">
+        <img src="5.png" class="panel" id="panel5" alt="Panel 5">
+        <img src="6.png" class="panel" id="panel6" alt="Panel 6">
+    </div>
+
+    <!-- TARJETA FINAL -->
+    <div class="tarjeta-final" id="tarjeta">
+        <h1>Para ti <span style="display:inline-block; animation: latido 2s infinite;">🌼</span></h1>
+        <p>Snoopy quería darte estas flores.</p>
+
+        <button class="boton-flores" onclick="mostrarSorpresa()">Toca aquí 🌻</button>
+
+        <div class="mensaje-oculto" id="sorpresa">
+            <p><strong>¡Espero que te guste!</strong></p>
+            <p>Aqui te mando este pequeño detalle para que te saque una sonrisa. 🐾❤️</p>
+        </div>
+    </div>
+
+    <script>
+        // --- LÓGICA DE LA HISTORIA ANIMADA (6 PANELES) ---
+        const paneles = [
+            document.getElementById('panel1'),
+            document.getElementById('panel2'),
+            document.getElementById('panel3'),
+            document.getElementById('panel4'),
+            document.getElementById('panel5'),
+            document.getElementById('panel6')
+        ];
+
+        let indiceActual = 0;
+        const velocidad = 2500; // 2.5 segundos por panel
+
+        function avanzarHistoria() {
+            // Ocultar el panel actual
+            paneles[indiceActual].classList.remove('activo');
+            indiceActual++;
+
+            // Si aún quedan paneles, mostrar el siguiente
+            if (indiceActual < paneles.length) {
+                paneles[indiceActual].classList.add('activo');
+
+                // Si es el ÚLTIMO panel, darle un poco más de tiempo antes de mostrar la tarjeta
+                if (indiceActual === paneles.length - 1) {
+                    setTimeout(() => {
+                        document.getElementById('tarjeta').style.display = 'block';
+                    }, velocidad + 1000); // 1 segundo extra para el último panel
+                } else {
+                    setTimeout(avanzarHistoria, velocidad);
+                }
+            }
+        }
+
+        // Inicia la historia después de 1 segundo
+        setTimeout(avanzarHistoria, 1000);
+
+        // --- LÓGICA DEL BOTÓN SORPRESA ---
+        function mostrarSorpresa() {
+            var sorpresa = document.getElementById("sorpresa");
+            var boton = document.querySelector(".boton-flores");
+
+            sorpresa.style.display = "block";
+
+            boton.innerHTML = "¡Sorpresa! 💖";
+            boton.style.backgroundColor = "#e74c3c";
+            boton.style.color = "white";
+            boton.disabled = true;
+            boton.style.cursor = "default";
+            boton.style.boxShadow = "none";
+            boton.style.transform = "none";
+            boton.style.animation = "none";
+
+            const emojis = ['🎉', '💖', '🌻', '🐾', '✨', '🌼'];
+            for (let i = 0; i < 12; i++) {
+                crearEmojiFlotante(emojis[Math.floor(Math.random() * emojis.length)]);
+            }
+        }
+
+        // --- FUNCIÓN PARA CREAR EMOJIS FLOTANTES ---
+        function crearEmojiFlotante(emoji) {
+            const span = document.createElement('span');
+            span.className = 'emoji-flotante';
+            span.innerText = emoji;
+
+            const x = window.innerWidth / 2 + (Math.random() - 0.5) * 150;
+            const y = window.innerHeight / 2 + (Math.random() - 0.5) * 150;
+            span.style.left = x + 'px';
+            span.style.top = y + 'px';
+
+            const dirX = (Math.random() - 0.5) * 300;
+            const dirY = (Math.random() - 0.5) * 300;
+            span.style.setProperty('--x', dirX + 'px');
+            span.style.setProperty('--y', dirY + 'px');
+
+            document.body.appendChild(span);
+
+            setTimeout(() => { span.remove(); }, 2000);
+        }
+
+        // --- LLUVIA DE EMOJIS ---
+        function crearLluvia() {
+            const emojis = ['❤️', '🌼', '🐾', '✨', '🌻'];
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const span = document.createElement('span');
+            span.className = 'lluvia-emoji';
+            span.innerText = emoji;
+            span.style.left = Math.random() * 100 + 'vw';
+            span.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            document.body.appendChild(span);
+
+            setTimeout(() => { span.remove(); }, 5000);
+        }
+
+        setInterval(crearLluvia, 300);
+    </script>
+
+</body>
+
+</html>
