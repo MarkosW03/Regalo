@@ -142,62 +142,7 @@
             pointer-events: none;
         }
 
-        /* --- PANTALLA DE CARGA --- */
-        .carga-sorpresa {
-            position: fixed;
-            inset: 0;
-            z-index: 50;
-            background-color: #fdfbf7;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid #f1c40f;
-            border-top-color: #2c3e50;
-            border-radius: 50%;
-            animation: girar 0.9s linear infinite;
-        }
-
-        .texto-carga {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            color: #2c3e50;
-            font-size: 1.1rem;
-        }
-
-        /* --- INDICADOR TOCA PARA EMPEZAR --- */
-        .indicador-inicio {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 40;
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 14px 26px;
-            border: 3px solid #2c3e50;
-            border-radius: 50px;
-            color: #2c3e50;
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            font-weight: bold;
-            font-size: 1.1rem;
-            box-shadow: 4px 4px 0px rgba(44, 62, 80, 0.2);
-            animation: latido 1.5s infinite;
-            pointer-events: none;
-        }
-
         /* --- ANIMACIONES --- */
-        @keyframes girar {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
         @keyframes aparecer {
             from {
                 opacity: 0;
@@ -245,15 +190,6 @@
 </head>
 
 <body>
-
-    <!-- PANTALLA DE CARGA MIENTRAS SE PRECARGAN LAS IMÁGENES -->
-    <div class="carga-sorpresa" id="carga">
-        <div class="spinner"></div>
-        <p class="texto-carga">Cargando sorpresa... 🌼</p>
-    </div>
-
-    <!-- INDICADOR QUE APARECE CUANDO TODO ESTÁ LISTO -->
-    <div class="indicador-inicio" id="indicador">👆 Toca para empezar</div>
 
     <!-- CONTENEDOR DE LAS 6 IMÁGENES -->
     <div class="contenedor-historia">
@@ -312,35 +248,10 @@
             }
         }
 
-        // --- PRECARGA DE IMÁGENES + INICIO CON TAP ---
-        const rutasImagenes = ['1.png', '2.png', '3.png', '4.png', '5.png', '6.png'];
-        const carga = document.getElementById('carga');
-        const indicador = document.getElementById('indicador');
-        let imagenesCargadas = 0;
-
-        function imagenLista(ruta) {
-            imagenesCargadas++;
-            if (imagenesCargadas === rutasImagenes.length) {
-                carga.style.display = 'none';
-                indicador.style.display = 'block';
-                document.addEventListener('pointerdown', iniciarHistoria, { once: true });
-            }
-        }
-
-        rutasImagenes.forEach(ruta => {
-            const img = new Image();
-            img.onload = () => imagenLista(ruta);
-            img.onerror = () => {
-                console.warn('No se pudo cargar la imagen: ' + ruta);
-                imagenLista(ruta);
-            };
-            img.src = ruta;
-        });
-
-        function iniciarHistoria() {
-            indicador.style.display = 'none';
+        // La historia inicia con el primer tap (móvil) o clic (escritorio)
+        document.addEventListener('pointerdown', () => {
             setTimeout(avanzarHistoria, velocidad);
-        }
+        }, { once: true });
 
         // --- LÓGICA DEL BOTÓN SORPRESA ---
         function mostrarSorpresa() {
